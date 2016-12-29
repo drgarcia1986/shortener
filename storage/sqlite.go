@@ -15,7 +15,7 @@ func (s *SQLite) getDB() (*sql.DB, error) {
 	return sql.Open("sqlite3", s.path)
 }
 
-func (s *SQLite) Get(short string) (*url.Url, error) {
+func (s *SQLite) Get(short string) (*url.URL, error) {
 	db, err := s.getDB()
 	if err != nil {
 		return nil, err
@@ -32,13 +32,13 @@ func (s *SQLite) Get(short string) (*url.Url, error) {
 	var views int
 	err = stmt.QueryRow(short).Scan(&original, &views)
 	if err != nil {
-		return nil, url.NotFound
+		return nil, url.ErrNotFound
 	}
 
-	return &url.Url{Short: short, Original: original, Views: views}, nil
+	return &url.URL{Short: short, Original: original, Views: views}, nil
 }
 
-func (s *SQLite) Set(u *url.Url) error {
+func (s *SQLite) Set(u *url.URL) error {
 	db, err := s.getDB()
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (s *SQLite) Set(u *url.Url) error {
 	return err
 }
 
-func (s *SQLite) IncViews(u *url.Url) error {
+func (s *SQLite) IncViews(u *url.URL) error {
 	db, err := s.getDB()
 	if err != nil {
 		return err

@@ -11,8 +11,8 @@ func TestFakeGet(t *testing.T) {
 	expectedOriginal := "http://golang.org"
 
 	storage := &Fake{
-		KnowUrls: map[string]*url.Url{
-			short: &url.Url{Short: short, Original: expectedOriginal}},
+		KnowUrls: map[string]*url.URL{
+			short: &url.URL{Short: short, Original: expectedOriginal}},
 	}
 
 	u, err := storage.Get(short)
@@ -26,19 +26,19 @@ func TestFakeGet(t *testing.T) {
 }
 
 func TestFakeGetNotFound(t *testing.T) {
-	storage := &Fake{KnowUrls: map[string]*url.Url{}}
+	storage := &Fake{KnowUrls: map[string]*url.URL{}}
 
 	_, err := storage.Get("abc")
-	if err != url.NotFound {
+	if err != url.ErrNotFound {
 		t.Errorf("Expected Not Found, got: %v", err)
 	}
 }
 
 func TestFakeSet(t *testing.T) {
 	short := "abc"
-	u := url.Url{Short: short, Original: "http://golang.org"}
+	u := url.URL{Short: short, Original: "http://golang.org"}
 
-	storage := &Fake{KnowUrls: map[string]*url.Url{}}
+	storage := &Fake{KnowUrls: map[string]*url.URL{}}
 	storage.Set(&u)
 
 	_, found := storage.KnowUrls[short]
@@ -50,8 +50,8 @@ func TestFakeSet(t *testing.T) {
 func TestFakeIncViews(t *testing.T) {
 	short := "abc"
 
-	u := url.Url{Short: short, Original: "http://golang.org", Views: 2}
-	storage := &Fake{KnowUrls: map[string]*url.Url{short: &u}}
+	u := url.URL{Short: short, Original: "http://golang.org", Views: 2}
+	storage := &Fake{KnowUrls: map[string]*url.URL{short: &u}}
 
 	err := storage.IncViews(&u)
 	if err != nil {

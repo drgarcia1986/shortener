@@ -13,7 +13,7 @@ func (s *Server) stats(w http.ResponseWriter, r *http.Request) {
 
 	u, err := s.db.Get(short)
 	if err != nil {
-		if err == url.NotFound {
+		if err == url.ErrNotFound {
 			respondNotFound(w)
 		} else {
 			respondServerError(w)

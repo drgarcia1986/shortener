@@ -32,7 +32,7 @@ func TestShortenerHandlerSuccessful(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error on read recorded response body: %v", err)
 	}
-	var u url.Url
+	var u url.URL
 	err = json.Unmarshal(body, &u)
 	if err != nil {
 		t.Errorf("Error to unmarshal response body: %v", err)

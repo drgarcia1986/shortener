@@ -16,7 +16,7 @@ func TestStatsHandlerSuccessful(t *testing.T) {
 
 	short := "abc"
 	expectedViews := 2
-	err := fakeStorage.Set(&url.Url{Short: short, Original: "http://golang.org", Views: expectedViews})
+	err := fakeStorage.Set(&url.URL{Short: short, Original: "http://golang.org", Views: expectedViews})
 	if err != nil {
 		t.Errorf("Error on create a url: %v", err)
 	}
@@ -37,7 +37,7 @@ func TestStatsHandlerSuccessful(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error on read recorded response body: %v", err)
 	}
-	var u url.Url
+	var u url.URL
 	err = json.Unmarshal(body, &u)
 	if err != nil {
 		t.Errorf("Error to unmarshal response body: %v", err)

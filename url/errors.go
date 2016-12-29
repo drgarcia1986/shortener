@@ -2,4 +2,4 @@ package url
 
 import "errors"
 
-var NotFound = errors.New("Url not found")
+var ErrNotFound = errors.New("Url not found")

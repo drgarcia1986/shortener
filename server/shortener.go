@@ -9,7 +9,7 @@ import (
 )
 
 type shortenerRequest struct {
-	Url string `json:"url"`
+	URL string `json:"url"`
 }
 
 func (s *Server) shortener(w http.ResponseWriter, r *http.Request) {
@@ -22,13 +22,13 @@ func (s *Server) shortener(w http.ResponseWriter, r *http.Request) {
 
 	var request shortenerRequest
 	err = json.Unmarshal(body, &request)
-	if err != nil || request.Url == "" {
+	if err != nil || request.URL == "" {
 		respondBadRequest(w)
 		return
 	}
 
 	short := url.GenerateShort(s.shortLength)
-	u := url.Url{Short: short, Original: request.Url}
+	u := url.URL{Short: short, Original: request.URL}
 	if err := s.db.Set(&u); err != nil {
 		respondServerError(w)
 		return

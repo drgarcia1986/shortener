@@ -82,7 +82,7 @@ func TestSqliteGetNotFound(t *testing.T) {
 		t.Errorf("Error to create tables: %v", err)
 	}
 	_, err = storage.Get("abc")
-	if err != url.NotFound {
+	if err != url.ErrNotFound {
 		t.Errorf("Expected NotFound, got: %v", err)
 	}
 }
@@ -101,19 +101,19 @@ func TestSqliteSet(t *testing.T) {
 
 	expectedShort := "cba"
 	expectedOriginal := "http://golang.org"
-	u := &url.Url{Short: expectedShort, Original: expectedOriginal}
+	u := &url.URL{Short: expectedShort, Original: expectedOriginal}
 
 	err = storage.Set(u)
 	if err != nil {
 		t.Errorf("Error to set new url: %v", err)
 	}
 
-	reloadedUrl, err := storage.Get(u.Short)
+	reloadedURL, err := storage.Get(u.Short)
 	if err != nil {
 		t.Errorf("Error on get url: %v", err)
 	}
-	if u.Short != reloadedUrl.Short || u.Original != reloadedUrl.Original {
-		t.Errorf("Expected %s, got %s", u, reloadedUrl)
+	if u.Short != reloadedURL.Short || u.Original != reloadedURL.Original {
+		t.Errorf("Expected %s, got %s", u, reloadedURL)
 	}
 }
 

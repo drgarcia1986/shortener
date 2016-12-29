@@ -15,7 +15,7 @@ func TestRedirectHandlerSuccessful(t *testing.T) {
 
 	short := "abc"
 	expectedOriginal := "http://golang.org"
-	err := fakeStorage.Set(&url.Url{Short: short, Original: expectedOriginal})
+	err := fakeStorage.Set(&url.URL{Short: short, Original: expectedOriginal})
 	if err != nil {
 		t.Errorf("Error on create a url: %v", err)
 	}
@@ -44,7 +44,7 @@ func TestRedirectHandlerIncUrlViews(t *testing.T) {
 	short := "abc"
 	currentViews := 1
 	expectedOriginal := "http://golang.org"
-	err := fakeStorage.Set(&url.Url{Short: short, Original: expectedOriginal, Views: currentViews})
+	err := fakeStorage.Set(&url.URL{Short: short, Original: expectedOriginal, Views: currentViews})
 	if err != nil {
 		t.Errorf("Error on create a url: %v", err)
 	}
