@@ -74,6 +74,23 @@ func (s *SQLite) IncViews(u *url.URL) error {
 	return err
 }
 
+func (s *SQLite) Create() error {
+	db, err := s.getDB()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	sqlStmt := `
+	create table urls (
+		short varchar(4) not null primary key,
+		original text not null,
+		views integer
+	)`
+	_, err = db.Exec(sqlStmt)
+	return err
+}
+
 func NewSQLite(path string) Storage {
 	return &SQLite{path: path}
 }

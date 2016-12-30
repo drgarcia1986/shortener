@@ -6,4 +6,5 @@ type Storage interface {
 	Get(string) (*url.URL, error)
 	Set(*url.URL) error
 	IncViews(*url.URL) error
+	Create() error
 }

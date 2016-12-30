@@ -27,6 +27,10 @@ func (f *Fake) IncViews(u *url.URL) error {
 	return nil
 }
 
+func (s *Fake) Create() error {
+	return nil
+}
+
 func NewFake() Storage {
 	urls := make(map[string]*url.URL)
 	return &Fake{KnowUrls: urls}
