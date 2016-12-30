@@ -6,6 +6,13 @@ import (
 	"github.com/drgarcia1986/shortener/url"
 )
 
+func TestFakeCreate(t *testing.T) {
+	storage := &Fake{}
+	if err := storage.Create(); err != nil {
+		t.Errorf("Error on create storage: %v", err)
+	}
+}
+
 func TestFakeGet(t *testing.T) {
 	short := "abc"
 	expectedOriginal := "http://golang.org"

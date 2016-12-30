@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"database/sql"
 	"os"
 	"testing"
 
@@ -10,22 +9,15 @@ import (
 
 const dbPath = "./test.db"
 
-func createTables(db *sql.DB) error {
-	sqlStmt := `
-	create table urls (
-		short varchar(4) not null primary key,
-		original text not null,
-		views integer
-	)`
-	_, err := db.Exec(sqlStmt)
-	return err
-}
-
-func createFakeData(db *sql.DB) error {
-	if err := createTables(db); err != nil {
+func createFakeData(s *SQLite) error {
+	if err := s.Create(); err != nil {
 		return err
 	}
-	_, err := db.Exec(`
+	db, err := s.getDB()
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(`
 		insert into urls (short, original, views)
 		values ("abc", "http://google.com", 0)
 	`)
@@ -33,6 +25,13 @@ func createFakeData(db *sql.DB) error {
 		return err
 	}
 	return nil
+}
+
+func TestSqliteCreate(t *testing.T) {
+	storage := &SQLite{path: dbPath}
+	if err := storage.Create(); err != nil {
+		t.Errorf("Error on create storage: %v", err)
+	}
 }
 
 func TestSqliteGetDB(t *testing.T) {
@@ -47,12 +46,8 @@ func TestSqliteGetDB(t *testing.T) {
 func TestSqliteGet(t *testing.T) {
 	defer os.Remove(dbPath)
 
-	storage := SQLite{path: dbPath}
-	db, err := storage.getDB()
-	if err != nil {
-		t.Errorf("Error on get DB: %v", err)
-	}
-	if err = createFakeData(db); err != nil {
+	storage := &SQLite{path: dbPath}
+	if err := createFakeData(storage); err != nil {
 		t.Errorf("Error on create fake data: %v", err)
 	}
 	u, err := storage.Get("abc")
@@ -73,15 +68,11 @@ func TestSqliteGet(t *testing.T) {
 func TestSqliteGetNotFound(t *testing.T) {
 	defer os.Remove(dbPath)
 
-	storage := SQLite{path: dbPath}
-	db, err := storage.getDB()
-	if err != nil {
-		t.Errorf("Error on get DB: %v", err)
-	}
-	if err = createTables(db); err != nil {
+	storage := &SQLite{path: dbPath}
+	if err := storage.Create(); err != nil {
 		t.Errorf("Error to create tables: %v", err)
 	}
-	_, err = storage.Get("abc")
+	_, err := storage.Get("abc")
 	if err != url.ErrNotFound {
 		t.Errorf("Expected NotFound, got: %v", err)
 	}
@@ -90,12 +81,8 @@ func TestSqliteGetNotFound(t *testing.T) {
 func TestSqliteSet(t *testing.T) {
 	defer os.Remove(dbPath)
 
-	storage := SQLite{path: dbPath}
-	db, err := storage.getDB()
-	if err != nil {
-		t.Errorf("Error on get DB: %v", err)
-	}
-	if err = createTables(db); err != nil {
+	storage := &SQLite{path: dbPath}
+	if err := storage.Create(); err != nil {
 		t.Errorf("Error to create tables: %v", err)
 	}
 
@@ -103,8 +90,7 @@ func TestSqliteSet(t *testing.T) {
 	expectedOriginal := "http://golang.org"
 	u := &url.URL{Short: expectedShort, Original: expectedOriginal}
 
-	err = storage.Set(u)
-	if err != nil {
+	if err := storage.Set(u); err != nil {
 		t.Errorf("Error to set new url: %v", err)
 	}
 
@@ -120,12 +106,8 @@ func TestSqliteSet(t *testing.T) {
 func TestSqliteIncViews(t *testing.T) {
 	defer os.Remove(dbPath)
 
-	storage := SQLite{path: dbPath}
-	db, err := storage.getDB()
-	if err != nil {
-		t.Errorf("Error on get DB: %v", err)
-	}
-	if err = createFakeData(db); err != nil {
+	storage := &SQLite{path: dbPath}
+	if err := createFakeData(storage); err != nil {
 		t.Errorf("Error on create fake data: %v", err)
 	}
 	u, err := storage.Get("abc")
