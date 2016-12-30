@@ -46,7 +46,9 @@ func TestFakeSet(t *testing.T) {
 	u := url.URL{Short: short, Original: "http://golang.org"}
 
 	storage := &Fake{KnowUrls: map[string]*url.URL{}}
-	storage.Set(&u)
+	if err := storage.Set(&u); err != nil {
+		t.Errorf("Error on set url: %v", err)
+	}
 
 	_, found := storage.KnowUrls[short]
 	if !found {
