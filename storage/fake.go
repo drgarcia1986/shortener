@@ -22,6 +22,8 @@ func (f *Fake) Get(short string) (*url.URL, error) {
 }
 
 func (f *Fake) Set(u *url.URL) error {
+	f.mutex.Lock()
+	defer f.mutex.Unlock()
 	f.KnowUrls[u.Short] = u
 	return nil
 }
