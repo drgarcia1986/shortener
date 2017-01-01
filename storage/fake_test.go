@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/drgarcia1986/shortener/url"
@@ -18,6 +19,7 @@ func TestFakeGet(t *testing.T) {
 	expectedOriginal := "http://golang.org"
 
 	storage := &Fake{
+		mutex: &sync.RWMutex{},
 		KnowUrls: map[string]*url.URL{
 			short: &url.URL{Short: short, Original: expectedOriginal}},
 	}
@@ -33,7 +35,7 @@ func TestFakeGet(t *testing.T) {
 }
 
 func TestFakeGetNotFound(t *testing.T) {
-	storage := &Fake{KnowUrls: map[string]*url.URL{}}
+	storage := &Fake{mutex: &sync.RWMutex{}, KnowUrls: map[string]*url.URL{}}
 
 	_, err := storage.Get("abc")
 	if err != url.ErrNotFound {
@@ -45,7 +47,7 @@ func TestFakeSet(t *testing.T) {
 	short := "abc"
 	u := url.URL{Short: short, Original: "http://golang.org"}
 
-	storage := &Fake{KnowUrls: map[string]*url.URL{}}
+	storage := &Fake{mutex: &sync.RWMutex{}, KnowUrls: map[string]*url.URL{}}
 	if err := storage.Set(&u); err != nil {
 		t.Errorf("Error on set url: %v", err)
 	}
@@ -60,7 +62,7 @@ func TestFakeIncViews(t *testing.T) {
 	short := "abc"
 
 	u := url.URL{Short: short, Original: "http://golang.org", Views: 2}
-	storage := &Fake{KnowUrls: map[string]*url.URL{short: &u}}
+	storage := &Fake{mutex: &sync.RWMutex{}, KnowUrls: map[string]*url.URL{short: &u}}
 
 	err := storage.IncViews(&u)
 	if err != nil {

@@ -1,12 +1,19 @@
 package storage
 
-import "github.com/drgarcia1986/shortener/url"
+import (
+	"sync"
+
+	"github.com/drgarcia1986/shortener/url"
+)
 
 type Fake struct {
 	KnowUrls map[string]*url.URL
+	mutex    *sync.RWMutex
 }
 
 func (f *Fake) Get(short string) (*url.URL, error) {
+	f.mutex.RLock()
+	defer f.mutex.RUnlock()
 	u, found := f.KnowUrls[short]
 	if !found {
 		return nil, url.ErrNotFound
@@ -20,10 +27,9 @@ func (f *Fake) Set(u *url.URL) error {
 }
 
 func (f *Fake) IncViews(u *url.URL) error {
-	u, found := f.KnowUrls[u.Short]
-	if found {
-		u.Views++
-	}
+	f.mutex.Lock()
+	defer f.mutex.Unlock()
+	u.Views++
 	return nil
 }
 
@@ -33,5 +39,6 @@ func (s *Fake) Create() error {
 
 func NewFake() Storage {
 	urls := make(map[string]*url.URL)
-	return &Fake{KnowUrls: urls}
+	mutex := &sync.RWMutex{}
+	return &Fake{KnowUrls: urls, mutex: mutex}
 }
